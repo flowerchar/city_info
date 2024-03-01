@@ -8,6 +8,7 @@ from tqdm import tqdm
 from typing import List
 
 
+proxy = {'http': 'http://127.0.0.1:7890', 'https': 'http://127.0.0.1:7890'}
 def sort_info_by_time(data: list) -> list:
     """
     按照列表第二项时间进行升序排序
@@ -56,7 +57,8 @@ def get_common_gov(pageBegin: int, pageEnd: int) -> list:
         for a_text, a_href, span in zip(element_a_text, element_a_href, element_span):
             # 追加元素进大列表
             data.append([a_text, a_href, span])
-            random_number = random.random() * 10 + 1  # 生成1到10之间的随机浮点数
+            # 生成1到10之间的随机浮点数
+            random_number = random.random() * 10 + 1
             # 以防反爬，休眠1秒
             time.sleep(random_number)
     # 返回大列表数据
@@ -79,21 +81,25 @@ def get_detail_content(data: list) -> list:
     for index, value in tqdm(enumerate(data)):
         # 拼接成完整的详情页url
         url = baseUrl + value[1]
-        # 对详情页发起请求
-        response = requests.get(url=url)
-        # 处理字符集编码
-        response.encoding = response.apparent_encoding
-        # 转换成lxml解析树
-        html = etree.HTML(response.text)
-        # TODO：这里替换成实际城市中的xpath
-        element_div_content = html.xpath('//*[@id="Content"]//text()')
-        # 清洗数据，把空白符剔除掉
-        content = ''.join(element_div_content).strip()
-        # 将所有元素组成一个csv列表
-        fullData.append([index + 1, value[0], value[2], value[2], f"{cityName}日报", url, content])
-        random_number = random.random() * 10 + 1  # 生成1到10之间的随机浮点数
-        # 程序休眠，防止封IP
-        time.sleep(random_number)
+        try:
+            # 对详情页发起请求
+            response = requests.get(url=url)
+            # 处理字符集编码
+            response.encoding = response.apparent_encoding
+            # 转换成lxml解析树
+            html = etree.HTML(response.text)
+            # TODO：这里替换成实际城市中的xpath
+            element_div_content = html.xpath('//*[@id="Content"]//text()')
+            # 清洗数据，把空白符剔除掉
+            content = ''.join(element_div_content).strip()
+            # 将所有元素组成一个csv列表
+            fullData.append([index + 1, value[0], value[2], value[2], f"{cityName}日报", url, content])
+            # 生成1到10之间的随机浮点数
+            random_number = random.random() * 10 + 1
+            # 程序休眠，防止封IP
+            time.sleep(random_number)
+        except:
+            break
     # 返回csv列表
     return fullData
 
@@ -117,6 +123,7 @@ def keep2csv(fileName: str, data: list) -> None:
         # 文件已存在，跳过写入操作
         print(f"CSV文件已存在：{fileName}，请先确认删除")
 
+
 # 得到总览页的数据信息 TODO：这里改写成实际的城市起止页
 data = get_common_gov(762, 903)  # 903
 
@@ -129,5 +136,3 @@ data3 = get_detail_content(data2)
 data4 = filter_by_time(data3)
 # 保存文件到csv TODO：这里替换成实际的省份-城市名
 keep2csv("福建_漳州", data4)
-
-
