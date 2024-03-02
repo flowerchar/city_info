@@ -99,7 +99,8 @@ def get_detail_content(data: list) -> list:
             # 程序休眠，防止封IP
             time.sleep(random_number)
         except:
-            break
+            print(f"{url}有误")
+            continue
     # 返回csv列表
     return fullData
 
