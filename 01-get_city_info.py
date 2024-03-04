@@ -9,6 +9,7 @@ from typing import List
 
 
 proxy = {'http': 'http://127.0.0.1:7890', 'https': 'http://127.0.0.1:7890'}
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'}
 def sort_info_by_time(data: list) -> list:
     """
     按照列表第二项时间进行升序排序
@@ -40,19 +41,23 @@ def get_common_gov(pageBegin: int, pageEnd: int) -> list:
     # 遍历[pageBegin, pageEnd]闭区间的数据
     for i in tqdm(range(pageBegin, pageEnd + 1)):
         # TODO：这里需要替换成实际城市的url
-        url = f"https://www.zhangzhou.gov.cn/cms/sitemanage/index.shtml?siteId=620416813021630000&page={i}"
+        # url = f"https://www.zhangzhou.gov.cn/cms/sitemanage/index.shtml?siteId=620416813021630000&page={i}"
+        url = f"https://www.np.gov.cn/cms/sitemanage/index.shtml?siteId=340337403813780000&page={i}"
         # 发起请求
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         # 处理不同字符集的差异
         response.encoding = response.apparent_encoding
         # 转换成lxml类型的解析树
         html = etree.HTML(response.text)
         # TODO：这里替换成实际的词条文本内容
-        element_a_text = html.xpath('//*[@id="resources"]/li/a/text()')
+        # element_a_text = html.xpath('//*[@id="resources"]/li/a/text()')
+        element_a_text = html.xpath('//*[@id="resources"]/li/span/a/text()')
         # TODO：替换成实际词条的href属性
-        element_a_href = html.xpath('//*[@id="resources"]/li/a/@href')
+        # element_a_href = html.xpath('//*[@id="resources"]/li/a/@href')
+        element_a_href = html.xpath('//*[@id="resources"]/li/span/a/@href')
         # TODO：替换成实际日期的xpath路径
-        element_span = html.xpath('//*[@id="resources"]/li/span/text()')
+        # element_span = html.xpath('//*[@id="resources"]/li/span/text()')
+        element_span = html.xpath('//*[@id="resources"]/li/span[@class="list-time"]/text()')
         # 同时遍历这三个列表，组成一个包含全部的大列表
         for a_text, a_href, span in zip(element_a_text, element_a_href, element_span):
             # 追加元素进大列表
@@ -72,23 +77,26 @@ def get_detail_content(data: list) -> list:
     :return: 返回格式为：['id', '标题', '成文或生成日期', '发布或生效日期', '来源', 'URL源地址', '内容']的数据
     """
     # TODO：此处改写成你所爬取的城市名
-    cityName = "漳州"
+    # cityName = "漳州"
+    cityName = "南平"
     # 存放进CSV的列表数据
     fullData: list = []
     # TODO：参见README中获得baseUrl的方法
-    baseUrl = 'https://www.zhangzhou.gov.cn'
+    # baseUrl = 'https://www.zhangzhou.gov.cn'
+    baseUrl = 'https://www.np.gov.cn/'
     # 遍历原列表中的数据
     for index, value in tqdm(enumerate(data)):
         # 拼接成完整的详情页url
         url = baseUrl + value[1]
         try:
             # 对详情页发起请求
-            response = requests.get(url=url)
+            response = requests.get(url=url, headers=headers)
             # 处理字符集编码
             response.encoding = response.apparent_encoding
             # 转换成lxml解析树
             html = etree.HTML(response.text)
             # TODO：这里替换成实际城市中的xpath
+            # element_div_content = html.xpath('//*[@id="Content"]//text()')
             element_div_content = html.xpath('//*[@id="Content"]//text()')
             # 清洗数据，把空白符剔除掉
             content = ''.join(element_div_content).strip()
@@ -126,8 +134,8 @@ def keep2csv(fileName: str, data: list) -> None:
 
 
 # 得到总览页的数据信息 TODO：这里改写成实际的城市起止页
-data = get_common_gov(762, 903)  # 903
-
+# data = get_common_gov(762, 903)
+data = get_common_gov(422, 483)
 # data1 = sort_info_by_time(data)
 # 过滤掉非2018年的数据
 data2 = filter_by_time(data)
@@ -136,4 +144,5 @@ data3 = get_detail_content(data2)
 # 按照日期时间升序
 data4 = filter_by_time(data3)
 # 保存文件到csv TODO：这里替换成实际的省份-城市名
-keep2csv("福建_漳州", data4)
+# keep2csv("福建_漳州", data4)
+keep2csv("福建_南平", data4)
