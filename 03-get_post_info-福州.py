@@ -52,7 +52,7 @@ def post_implicit_gov(pageBegin: int, pageEnd: int) -> list:
             # 生成1到10之间的随机浮点数
             random_number = random.random() * 10 + 1
             # 以防反爬，休眠1秒
-            time.sleep(1)
+            time.sleep(random_number)
             # ID自增
             index += 1
     # 返回大列表数据
@@ -62,13 +62,21 @@ def get_detail_info(data: list) -> list:
     filter_data = filter_by_time(data)
     for i, v in tqdm(enumerate(filter_data)):
         url = v[5]
-        response = requests.get(url)
-        response.encoding = response.apparent_encoding
-        html = etree.HTML(response.text)
-        content = html.xpath('//div[@class="TRS_Editor"]//text()')
-        # 清洗数据，把空白符剔除掉
-        content = ''.join(content).strip()
-        filter_data[i][6] = content
+        try:
+            response = requests.get(url)
+            response.encoding = response.apparent_encoding
+            html = etree.HTML(response.text)
+            content = html.xpath('//div[@class="TRS_Editor"]//text()')
+            # 清洗数据，把空白符剔除掉
+            content = ''.join(content).strip()
+            filter_data[i][6] = content
+            # 生成1到10之间的随机浮点数
+            random_number = random.random() * 10 + 1
+            # 以防反爬，休眠1秒
+            time.sleep(random_number)
+        except Exception as e:
+            print(f"{url}无效")
+            continue
     return filter_data
 def keep2csv(fileName: str, data: list) -> None:
     # 完整的文件名，加上时间戳是以防把之前的冲突而报错
