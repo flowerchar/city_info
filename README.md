@@ -48,7 +48,7 @@
   - "泉州"
   
     -  f"https://www.quanzhou.gov.cn/smartSearch/interface/search.do?express=(chnlid%3D120)&keyName=zhss&siteId=2c9d02866787ab22016787b129ae0032&order=-docrelTime&pagesize=15&currentpage={i}&pagesize=15"
-      
+    
   
     - title = j['docTitle']
   
@@ -65,26 +65,39 @@
 - 三明（**数据较少**）
 
 
-  - 'Referer':'https://www.sm.gov.cn/zw/zwxx/sjdt/'
-  - "三明"
-  - f"https://www.sm.gov.cn/fjdzapp/data?channelid=100000&sortfield=-docorderpri%2C-docreltime&classsql=chnlid%3D4064&classcol=publishyear&classnum=100&classsort=0&cache=true&page=133&prepage=75"
-  - 661， 662
+    - 'Referer':'https://www.sm.gov.cn/zw/zwxx/sjdt/'
+
+
+    - "三明"
+
+
+    - f"https://www.sm.gov.cn/fjdzapp/data?channelid=100000&sortfield=-docorderpri%2C-docreltime&classsql=chnlid%3D4064&classcol=publishyear&classnum=100&classsort=0&cache=true&page=133&prepage=75"
+
+
+    - 661， 662
+
+
 
 - 莆田市
 
+    - 717， 910
 
-  - 717， 910
+
 
 - 厦门 无
 
+  - 湖里  99， 105
+
+  - 集美   28， 42
+
 - 福州
 
+    - 452， 547
 
-  - 452， 547
+
 
 - 绥化
 
-
-  - 66， 96
+    - 66， 96
 
 
