@@ -83,10 +83,12 @@ def get_detail_content(data: list) -> list:
     fullData: list = []
     # TODO：参见README中获得baseUrl的方法
     # baseUrl = 'https://www.zhangzhou.gov.cn'
-    baseUrl = 'https://www.jms.gov.cn/'
+    baseUrl = 'https://www.jms.gov.cn'
     # 遍历原列表中的数据
     for index, value in tqdm(enumerate(data)):
-        url = value[1][2:]
+        # print(value)
+        # exit(0)
+        url = value[1]
         # 拼接成完整的详情页url
         url = baseUrl + url
         try:
@@ -98,7 +100,7 @@ def get_detail_content(data: list) -> list:
             html = etree.HTML(response.text)
             # TODO：这里替换成实际城市中的xpath
             # element_div_content = html.xpath('//*[@id="Content"]//text()')
-            element_div_content = html.xpath('////*[@id="zoom"]//text()')
+            element_div_content = html.xpath('//*[@id="zoom"]//text()')
             # 清洗数据，把空白符剔除掉
             content = ''.join(element_div_content).strip()
             # 将所有元素组成一个csv列表
@@ -136,7 +138,7 @@ def keep2csv(fileName: str, data: list) -> None:
 
 # 得到总览页的数据信息 TODO：这里改写成实际的城市起止页
 # data = get_common_gov(762, 903)
-data = get_common_gov(412, 533)
+data = get_common_gov(412, 533)#533
 # data1 = sort_info_by_time(data)
 # 过滤掉非2018年的数据
 data2 = filter_by_time(data)
