@@ -67,7 +67,10 @@ def get_detail_info(data: list) -> list:
     for i, v in tqdm(enumerate(filter_data)):
         # TODO baseUrl
         url = "www.hljboli.gov.cn" + v[5]
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+        except:
+            continue
         response.encoding = response.apparent_encoding
         html = etree.HTML(response.text)
         # TODO: xpath替换
@@ -103,5 +106,6 @@ def keep2csv(fileName: str, data: list) -> None:
 data1 = get_implicit_gov(119,128)
 # 过滤非2018的数据
 data2 = filter_by_time(data1)
+data3 = get_detail_info(data2)
 # TODO：写全文件名，保存到csv
-keep2csv("黑龙江-七台河", data2)
+keep2csv("黑龙江-七台河", data3)

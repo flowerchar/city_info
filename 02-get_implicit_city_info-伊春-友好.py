@@ -97,5 +97,6 @@ def keep2csv(fileName: str, data: list) -> None:
 data1 = get_implicit_gov(91,108)
 # 过滤非2018的数据
 data2 = filter_by_time(data1)
+data3 = get_detail_info(data2)
 # TODO：写全文件名，保存到csv
-keep2csv("伊春-友好", data2)
+keep2csv("伊春-友好", data3)
