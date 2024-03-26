@@ -58,6 +58,7 @@ def get_common_gov(pageBegin: int, pageEnd: int) -> list:
         # TODO：替换成实际日期的xpath路径
         # element_span = html.xpath('//*[@id="resources"]/li/span/text()')
         element_span = html.xpath('//div[@class="main"]//span/text()')
+        element_span = list(map(lambda x: x[1:-1:], element_span))
         # 同时遍历这三个列表，组成一个包含全部的大列表
         for a_text, a_href, span in zip(element_a_text, element_a_href, element_span):
             # 追加元素进大列表
@@ -138,14 +139,14 @@ def keep2csv(fileName: str, data: list) -> None:
 
 # 得到总览页的数据信息 TODO：这里改写成实际的城市起止页
 # data = get_common_gov(762, 903)
-data = get_common_gov(156, 183)#533
+data = get_common_gov(156, 183)#183
 # data1 = sort_info_by_time(data)
 # 过滤掉非2018年的数据
 data2 = filter_by_time(data)
 # 获取详情页的文本数据
 data3 = get_detail_content(data2)
 # 按照日期时间升序
-data4 = filter_by_time(data3)
+data4 = sort_info_by_time(data3)
 # 保存文件到csv TODO：这里替换成实际的省份-城市名
 # keep2csv("福建_漳州", data4)
 keep2csv("黑龙江-牡丹江-东宁", data4)
