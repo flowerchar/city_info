@@ -1,1 +1,9 @@
-100000,l,5
+100001,Luo WeiLi,5
+100001,Luo WeiLi,0
+100001,Luo WeiLi,4
+100001,Luo WeiLi,2
+100001,Luo WeiLi,7
+100002,Zhang San,10
+100001,Luo WeiLi,8
+100003,Li Si,2
+100004,Wang Wu,2

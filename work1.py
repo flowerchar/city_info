@@ -3,9 +3,16 @@ import os
 from typing import List
 students = []
 # [[10000, "asd", 100], [10001, "asd", 100], [10002, "asd", 100]]  : List[List[int, str, float]]
-def init():
+def init() -> None:
+    '''
+    初始化函数，用于读取record.txt文件中的数据；也可以是测评后更新数据
+    :return:
+    '''
     # 如果不存在record.txt文件，创建一个空文件
     global students
+    if students is not None:
+        # 说明是非第一次调用init函数
+        students.clear()
     if not os.path.exists("record.txt"):
         with open("record.txt", 'w'):
             return
@@ -15,8 +22,11 @@ def init():
             student = [int(student[0]), student[1], int(student[2])]
             students.append(student)
 
-def generate_id():
-    # 我希望这个函数返回从100001到999999之间的一个递增的数字，我不希望是随机的，而是递增不重复的，实现代码
+def generate_id() -> int:
+    '''
+    生成学生ID
+    :return: 返回从100001到999999之间的一个递增的数字
+    '''
     if not students:
         student_id = 100001
     else:
@@ -28,11 +38,18 @@ def generate_id():
 
 
 def generate_question() -> tuple:
+    '''
+    生成算术题
+    :return: 数字1，运算符，数字2
+    '''
     # 生成算术题
     num1 = random.randint(0, 99)
     num2 = random.randint(0, 99)
     operator = random.choice(['+', '-', '*', '/'])
     if operator == '/':
+        if num1 == 0:
+            num1 = random.randint(1, 99)
+            # 为了避免randint出错，重新生成num1
         num2 = random.randint(1, num1)  # 保证可以整除，且除数不为0
         num1 = num1 * num2  # 修改num1，使得结果正确
     answer = eval(f"{num1} {operator} {num2}")
@@ -42,6 +59,14 @@ def generate_question() -> tuple:
 
 
 def check_answer(num1: int, operator: str, num2: int, user_answer: float) -> bool:
+    '''
+    检查答案是否正确
+    :param num1:
+    :param operator:
+    :param num2:
+    :param user_answer:
+    :return:
+    '''
     # 检查答案是否正确
     if operator == '+':
         correct_answer = num1 + num2
@@ -54,54 +79,62 @@ def check_answer(num1: int, operator: str, num2: int, user_answer: float) -> boo
     return user_answer == correct_answer
 
 
-def record_score(file_name, student_id, current_student_name, score):
+def record_score(file_name, student_id, current_student_name, score) -> None:
+    '''
+    记录学生成绩
+    :param file_name:
+    :param student_id:
+    :param current_student_name:
+    :param score:
+    :return:
+    '''
     # 记录学生成绩
     with open(file_name, 'a') as file:
         file.write(f"{student_id},{current_student_name},{score}\n")
 
 
-def read_records(file_name):
-    # 读取记录文件
-    records = []
-    with open(file_name, 'r') as file:
-        for line in file:
-            record = line.strip().split(',')
-            records.append(record)
-    return records
-
-
-def calculate_average_score(records):
-    # 计算平均分
-    total_score = sum(int(record[2]) for record in records)
-    return round(total_score / len(records), 2)
-
-
-def search_student(records, search_key):
-    # 查询学生记录
-    found_records = [record for record in records if search_key in record[:2]]
-    if not found_records:
-        return None
-    average_score = calculate_average_score(found_records)
-    return found_records, average_score
-
-
-def sort_students(records):
-    # 按平均分排序学生
-    sorted_records = sorted(records, key=lambda x: (-calculate_average_score(x), int(x[0])))
-    return sorted_records
-
 def find_id_by_name(name: str, data: list) -> int:
+    '''
+    通过姓名查找学生ID
+    :param name:
+    :param data:
+    :return: 学生ID
+    '''
     student_id = None
 
     for i, sublist in enumerate(data):
         if sublist[1] == name:
-            if i > 0:
-                student_id = data[i][0]
-            break
+            # if i > 0:
+            student_id = data[i][0]
+        break
 
     return student_id
 
+def check_name_pattern(name: str) -> bool:
+    '''
+    检查姓名格式是否正确
+    :param name:
+    :return:
+    '''
+    try:
+        name_list = name.split(' ')
+        if len(name_list) != 2:
+            return False
+        else:
+            for i in name_list:
+                if not (i.isalpha() and i[0].isupper()):
+                    # 这层判断包括为字母并且首字母大写
+                    return False
+            return True
+    except ValueError:
+        return False
+
 def average_score(data):
+    '''
+    计算学生的平均分
+    :param data:
+    :return: 按照指定顺序排序的学生平均分列表
+    '''
     # 创建一个字典来存储每个学生的总分数和出现的次数
     student_scores = {}
 
@@ -128,10 +161,17 @@ def average_score(data):
 
 
 def main():
+    '''
+    主函数
+    :return:
+    '''
     # 主函数
 
     records_file = "record.txt"
-    current_student_name = input("请输入你的姓名：" )
+    current_student_name = check_name_pattern(input("请输入你的姓名：" ).strip())
+    if not current_student_name:
+        print("姓名输入有误，请重新输入！")
+        return
     init()
 
     while True:
@@ -156,7 +196,7 @@ def main():
             while i <= 10:
                 num1, operator, num2 = generate_question()
                 try:
-                    user_answer = int(input(f"第{i}题：{num1} {operator} {num2} = "))
+                    user_answer = float(input(f"第{i}题：{num1} {operator} {num2} = "))
                 except ValueError:
                     print("输入有误，请重新输入！")
                     continue
@@ -167,12 +207,14 @@ def main():
                     print("回答错误！")
                 i += 1
             record_score(records_file, student_id, current_student_name, score)
+            init()
             print("你的得分是：", score)
 
         elif choice == '2':
             search_key = input("请输入要查询的学生姓名或ID：")
-            # if "100001" <= search_key <= "999999":
-            #     pass
+            if "100001" <= search_key <= "999999" and search_key.isdigit():
+                # 是id
+                search_key = int(search_key)
             # else:
             #     pass
             filtered_data = [sublist for sublist in students if search_key in sublist]
@@ -181,9 +223,11 @@ def main():
             if filtered_data:
                 # found_records, average_score = search_result
                 print(f"学生{search_key}的历史得分为：")
-                for record in filtered_data:
-                    print(f"ID: {record[0]}, 姓名: {record[1]}, 得分: {record[2]}")
-                print(f"平均得分为：{sum([sublist[-1] for sublist in filtered_data])/len(filtered_data):.2f}")
+                for index, record in enumerate(filtered_data, start=1):
+                    print(f"第{index}次测评得分: {record[2]}")  # 学号: {record[0]}, 姓名: {record[1]},
+                total_score = sum([sublist[-1] for sublist in filtered_data])
+                times = len(filtered_data)
+                print(f"总和成绩为：{total_score}，经过{times}次测评，平均得分为：{total_score/times:.2f}")
             else:
                 print("未找到该学生的记录！")
 
@@ -191,7 +235,7 @@ def main():
             average_score_list = average_score(students)
             print("按平均分排序的学生名单：")
             for i, record in enumerate(average_score_list, start=1):
-                print(f"第{i}名: ID: {record[0]}, 姓名: {record[1]}, 平均得分: {record[2]}")
+                print(f"第{i}名: 学号: {record[0]}, 姓名: {record[1]}, 平均得分: {record[2]}")
 
         elif choice == '4':
             break
