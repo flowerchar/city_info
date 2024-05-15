@@ -7,3 +7,9 @@
 100001,Luo WeiLi,8
 100003,Li Si,2
 100004,Wang Wu,2
+100001,Luo WeiLi,4
+100001,Luo WeiLi,0
+100001,Luo WeiLi,0
+100004,Wang Wu,1
+100005,Luo We,0
+100006,Jia Ren,0

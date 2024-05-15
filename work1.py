@@ -79,7 +79,7 @@ def check_answer(num1: int, operator: str, num2: int, user_answer: float) -> boo
     return user_answer == correct_answer
 
 
-def record_score(file_name, student_id, current_student_name, score) -> None:
+def record_score(file_name: str, student_id: int, current_student_name: str, score: int) -> None:
     '''
     记录学生成绩
     :param file_name:
@@ -106,7 +106,7 @@ def find_id_by_name(name: str, data: list) -> int:
         if sublist[1] == name:
             # if i > 0:
             student_id = data[i][0]
-        break
+            break
 
     return student_id
 
@@ -117,12 +117,12 @@ def check_name_pattern(name: str) -> bool:
     :return:
     '''
     try:
-        name_list = name.split(' ')
-        if len(name_list) != 2:
+        name_split = name.split(' ')
+        if len(name_split) != 2:
             return False
         else:
-            for i in name_list:
-                if not (i.isalpha() and i[0].isupper()):
+            for i in name_split:
+                if not (i.isalpha() and i[0].isupper()): # 这里的坑，不能用istitle
                     # 这层判断包括为字母并且首字母大写
                     return False
             return True
@@ -154,7 +154,7 @@ def average_score(data):
         averages.append([student_id, name, average_score])
 
     # 按照平均成绩从大到小排序，如果平均成绩相同，则按照 ID 从小到大排序
-    sorted_averages = sorted(averages, key=lambda x: (-x[2], x[0]))
+    sorted_averages = sorted(averages, key=lambda x: (-x[2], x[0])) # 表示先按照第三个元素的负值进行降序排序，如果第三个元素的负值相同，则按照第一个元素的值进行升序排序
 
     return sorted_averages
 
@@ -168,8 +168,8 @@ def main():
     # 主函数
 
     records_file = "record.txt"
-    current_student_name = check_name_pattern(input("请输入你的姓名：" ).strip())
-    if not current_student_name:
+    current_student_name = input("请输入你的姓名：" ).strip()
+    if not check_name_pattern(current_student_name):
         print("姓名输入有误，请重新输入！")
         return
     init()
@@ -193,7 +193,7 @@ def main():
             print("你的ID是：", student_id)
             score = 0
             i = 1
-            while i <= 10:
+            while i <= 10: # 不能用for循环，因为for中的i是局部变量
                 num1, operator, num2 = generate_question()
                 try:
                     user_answer = float(input(f"第{i}题：{num1} {operator} {num2} = "))
@@ -205,7 +205,7 @@ def main():
                     score += 1
                 else:
                     print("回答错误！")
-                i += 1
+                i += 1 # 不管正确与否都要加1
             record_score(records_file, student_id, current_student_name, score)
             init()
             print("你的得分是：", score)
@@ -217,7 +217,7 @@ def main():
                 search_key = int(search_key)
             # else:
             #     pass
-            filtered_data = [sublist for sublist in students if search_key in sublist]
+            filtered_data = [sublist for sublist in students if search_key in sublist] # 这个功能很强大，姓名跟id都可以匹配
             # records = read_records(records_file)
             # search_result = search_student(records, search_key)
             if filtered_data:
@@ -243,6 +243,6 @@ def main():
         else:
             print("无效选项，请重新输入！")
 
-
+# print("a")
 if __name__ == "__main__":
     main()

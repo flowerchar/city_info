@@ -2,9 +2,26 @@ import random
 import os
 
 class AdminSystem:
+
+    STUDENT_ID_OVERFLOW = "学生ID已达到上限！"
+    OPERATOR_LIST = ['+', '-', '*', '/']
+    INPUT_NAME = "请输入你的姓名："
+    INVALID_NAME = "姓名输入有误，请重新输入！"
+    OPTIONS = f"{'='*10}\n1. 开始测试\n2. 成绩查询\n3. 成绩排序\n4. 退出\n{'='*10}"
+    CHOOSE_OPERATION = "请选择操作："
+    INVALID_ANSWER = "输入答案格式有误，请重新输入！"
+    ANSWER_TRUE = "回答正确！"
+    ANSWER_FALSE = "回答错误！"
+    INPUT_NAME_OR_ID = "请输入要查询的学生姓名或ID："
+    LOWER_LIMIT = "100001"
+    UPPER_LIMIT = "999999"
+    RECORD_NOT_FIND = "未找到该学生的记录！"
+    SORTED_AVERAGE_SCORE_LIST = "按平均分排序的学生名单："
+    INVALID_OPTION = "无效选项，请重新输入！"
+
     def __init__(self):
         self.students = []
-        self.records_file = "record.txt"
+        self.records_file = "record12.txt"
         self.current_student_name = None
 
 
@@ -17,10 +34,10 @@ class AdminSystem:
         if self.students is not None:
             # 说明是非第一次调用init函数
             self.students.clear()
-        if not os.path.exists("record.txt"):
-            with open("record.txt", 'w'):
+        if not os.path.exists(self.records_file):
+            with open(self.records_file, 'w'):
                 return
-        with open("record.txt", 'r') as file:
+        with open(self.records_file, 'r') as file:
             for line in file:
                 student = line.strip().split(',')
                 student = [int(student[0]), student[1], int(student[2])]
@@ -32,12 +49,12 @@ class AdminSystem:
         :return: 返回从100001到999999之间的一个递增的数字
         '''
         if not self.students:
-            student_id = 100001
+            student_id = int(AdminSystem.LOWER_LIMIT)
         else:
             id_list = [int(student[0]) for student in self.students]
             student_id = max(id_list) + 1
-            if student_id > 999999:
-                raise ValueError("学生ID已达到上限！")
+            if student_id > int(AdminSystem.UPPER_LIMIT):
+                raise ValueError(AdminSystem.STUDENT_ID_OVERFLOW)
         return student_id
 
 
@@ -49,7 +66,7 @@ class AdminSystem:
         # 生成算术题
         num1 = random.randint(0, 99)
         num2 = random.randint(0, 99)
-        operator = random.choice(['+', '-', '*', '/'])
+        operator = random.choice(AdminSystem.OPERATOR_LIST)
         if operator == '/':
             if num1 == 0:
                 num1 = random.randint(1, 99)
@@ -72,13 +89,13 @@ class AdminSystem:
         :return:
         '''
         # 检查答案是否正确
-        if operator == '+':
+        if operator == AdminSystem.OPERATOR_LIST[0]:
             correct_answer = num1 + num2
-        elif operator == '-':
+        elif operator == AdminSystem.OPERATOR_LIST[1]:
             correct_answer = num1 - num2
-        elif operator == '*':
+        elif operator == AdminSystem.OPERATOR_LIST[2]:
             correct_answer = num1 * num2
-        elif operator == '/':
+        elif operator == AdminSystem.OPERATOR_LIST[3]:
             correct_answer = num1 // num2
         return user_answer == correct_answer
 
@@ -110,7 +127,7 @@ class AdminSystem:
             if sublist[1] == name:
                 # if i > 0:
                 student_id = data[i][0]
-            break
+                break
 
         return student_id
 
@@ -170,18 +187,15 @@ class AdminSystem:
         :return:
         '''
         # 主函数
-        self.current_student_name = self.check_name_pattern(input("请输入你的姓名：" ).strip())
-        if not self.current_student_name:
-            print("姓名输入有误，请重新输入！")
+        self.current_student_name = input(AdminSystem.INPUT_NAME).strip()
+        if not self.check_name_pattern(self.current_student_name):
+            print(AdminSystem.INVALID_NAME)
             return
         self.init()
 
         while True:
-            print("\n1. 开始测试")
-            print("2. 成绩查询")
-            print("3. 成绩排序")
-            print("4. 退出")
-            choice = input("请选择操作：")
+            print(AdminSystem.OPTIONS)
+            choice = input(AdminSystem.CHOOSE_OPERATION)
 
             if choice == '1':
                 # current_student_name = input("请输入你的姓名：")
@@ -192,7 +206,7 @@ class AdminSystem:
                 else:
                     student_id = self.find_id_by_name(self.current_student_name, self.students)
                     # students.append([student_id, current_student_name, 0])
-                print("你的ID是：", student_id)
+                print(f"你的ID是：{student_id}")
                 score = 0
                 i = 1
                 while i <= 10:
@@ -200,21 +214,21 @@ class AdminSystem:
                     try:
                         user_answer = float(input(f"第{i}题：{num1} {operator} {num2} = "))
                     except ValueError:
-                        print("输入有误，请重新输入！")
+                        print(AdminSystem.INVALID_ANSWER)
                         continue
                     if self.check_answer(num1, operator, num2, user_answer):
-                        print("回答正确！")
+                        print(AdminSystem.ANSWER_TRUE)
                         score += 1
                     else:
-                        print("回答错误！")
+                        print(AdminSystem.ANSWER_FALSE)
                     i += 1
                 self.record_score(self.records_file, student_id, self.current_student_name, score)
                 self.init()
-                print("你的得分是：", score)
+                print(f"你的得分是：{score}")
 
             elif choice == '2':
-                search_key = input("请输入要查询的学生姓名或ID：")
-                if "100001" <= search_key <= "999999" and search_key.isdigit():
+                search_key = input(AdminSystem.INPUT_NAME_OR_ID).strip()
+                if AdminSystem.LOWER_LIMIT <= search_key <= AdminSystem.UPPER_LIMIT and search_key.isdigit():
                     # 是id
                     search_key = int(search_key)
                 # else:
@@ -231,11 +245,11 @@ class AdminSystem:
                     times = len(filtered_data)
                     print(f"总和成绩为：{total_score}，经过{times}次测评，平均得分为：{total_score/times:.2f}")
                 else:
-                    print("未找到该学生的记录！")
+                    print(AdminSystem.RECORD_NOT_FIND)
 
             elif choice == '3':
                 average_score_list = self.average_score(self.students)
-                print("按平均分排序的学生名单：")
+                print(AdminSystem.SORTED_AVERAGE_SCORE_LIST)
                 for i, record in enumerate(average_score_list, start=1):
                     print(f"第{i}名: 学号: {record[0]}, 姓名: {record[1]}, 平均得分: {record[2]}")
 
@@ -243,7 +257,7 @@ class AdminSystem:
                 break
 
             else:
-                print("无效选项，请重新输入！")
+                print(AdminSystem.INVALID_OPTION)
 
 
 if __name__ == "__main__":
