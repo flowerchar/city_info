@@ -54,7 +54,7 @@ def generate_question() -> tuple:
         num1 = num1 * num2  # 修改num1，使得结果正确
     answer = eval(f"{num1} {operator} {num2}")
     if not(0 < answer < 100) or (num1 > 100 or num2 > 100):
-        return generate_question() # num1, operator, num2
+        return generate_question()
     return num1, operator, num2
 
 
@@ -105,7 +105,7 @@ def find_id_by_name(name: str, data: list) -> int:
     for i, sublist in enumerate(data):
         if sublist[1] == name:
             # if i > 0:
-            student_id = data[i][0] ## sublist[0]
+            student_id = data[i][0]
             break
 
     return student_id
@@ -122,53 +122,25 @@ def check_name_pattern(name: str) -> bool:
             return False
         else:
             for i in name_split:
-                if not (i.isalpha() and i[0].isupper()): # 这里的坑，不能用istitle Luo WeiLi BookStore
+                if not (i.isalpha() and i[0].isupper()): # 这里的坑，不能用istitle
                     # 这层判断包括为字母并且首字母大写
                     return False
             return True
     except ValueError:
         return False
 
-# def average_score(data):
-#     '''
-#     计算学生的平均分
-#     :param data:
-#     :return: 按照指定顺序排序的学生平均分列表
-#     '''
-#     # 创建一个字典来存储每个学生的总分数和出现的次数
-#     student_scores = {}
-#
-#     # 遍历大列表，计算每个学生的总分数和出现的次数
-#     for student in data:
-#         student_id, name, score = student  # 学号、姓名和分数  解构赋值
-#         if student_id not in student_scores:
-#             student_scores[student_id] = [score, 1, name] # {100001：[100, 1, "asd"]}
-#         else:
-#             student_scores[student_id][0] += score
-#             student_scores[student_id][1] += 1
-#
-#     # 计算每个学生的平均分，并组成列表返回
-#     averages = []
-#     for student_id, (total_score, count, name) in student_scores.items():
-#         average_score = round(total_score / count, 2)  # 保留两位小数
-#         averages.append([student_id, name, average_score])
-#
-#     # 按照平均成绩从大到小排序，如果平均成绩相同，则按照 ID 从小到大排序
-#     sorted_averages = sorted(averages, key=lambda x: (-x[2], x[0])) # 表示先按照第三个元素的负值进行降序排序，如果第三个元素的负值相同，则按照第一个元素的值进行升序排序
-#
-#     return sorted_averages
 def average_score(data):
     '''
-    计算学生的平均分并为每个学生分配名次
-    :param data: 包含学生学号、姓名和分数的元组列表
-    :return: 按照指定顺序排序的学生平均分列表，包含名次字段
+    计算学生的平均分
+    :param data:
+    :return: 按照指定顺序排序的学生平均分列表
     '''
     # 创建一个字典来存储每个学生的总分数和出现的次数
     student_scores = {}
 
     # 遍历大列表，计算每个学生的总分数和出现的次数
     for student in data:
-        student_id, name, score = student
+        student_id, name, score = student  # 学号、姓名和分数
         if student_id not in student_scores:
             student_scores[student_id] = [score, 1, name]
         else:
@@ -178,20 +150,11 @@ def average_score(data):
     # 计算每个学生的平均分，并组成列表返回
     averages = []
     for student_id, (total_score, count, name) in student_scores.items():
-        average_score = round(total_score / count, 2)
-        averages.append([0, student_id, name, average_score])  # 添加名次字段，初始为0
+        average_score = round(total_score / count, 2)  # 保留两位小数
+        averages.append([student_id, name, average_score])
 
     # 按照平均成绩从大到小排序，如果平均成绩相同，则按照 ID 从小到大排序
-    sorted_averages = sorted(averages, key=lambda x: (-x[3], x[1]))  # 按平均分降序，ID升序排序
-
-    # 为每个学生分配名次
-    rank = 1
-    prev_score = None
-    for i, student in enumerate(sorted_averages):
-        if student[3] != prev_score:
-            rank = i + 1
-            prev_score = student[3]
-        sorted_averages[i][0] = rank
+    sorted_averages = sorted(averages, key=lambda x: (-x[2], x[0])) # 表示先按照第三个元素的负值进行降序排序，如果第三个元素的负值相同，则按照第一个元素的值进行升序排序
 
     return sorted_averages
 
@@ -253,8 +216,8 @@ def main():
                 # 是id
                 search_key = int(search_key)
             # else:
-            #     pass                         # 100001 in [100001, "asd", 100] or "asd" in [100001, "asd", 100]
-            filtered_data = [sublist for sublist in students if search_key in sublist] # 这个功能很强大，姓名跟id都可以匹配 search_key==sublist[0] or search_key == sublist[1]
+            #     pass
+            filtered_data = [sublist for sublist in students if search_key in sublist] # 这个功能很强大，姓名跟id都可以匹配
             # records = read_records(records_file)
             # search_result = search_student(records, search_key)
             if filtered_data:
@@ -272,14 +235,14 @@ def main():
             average_score_list = average_score(students)
             print("按平均分排序的学生名单：")
             for i, record in enumerate(average_score_list, start=1):
-                # print(f"第{i}名: 学号: {record[0]}, 姓名: {record[1]}, 平均得分: {record[2]}")
-                print(f"第{record[0]}名: 学号: {record[1]}, 姓名: {record[2]}, 平均得分: {record[3]}")
+                print(f"第{i}名: 学号: {record[0]}, 姓名: {record[1]}, 平均得分: {record[2]}")
+
         elif choice == '4':
             break
 
         else:
             print("无效选项，请重新输入！")
 
-
-if __name__ == '__main__':
+# print("a")
+if __name__ == "__main__":
     main()

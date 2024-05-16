@@ -21,7 +21,7 @@ class AdminSystem:
 
     def __init__(self):
         self.students = []
-        self.records_file = "record.txt"
+        self.records_file = "record12.txt"
         self.current_student_name = None
 
 
@@ -171,22 +171,14 @@ class AdminSystem:
         # 计算每个学生的平均分，并组成列表返回
         averages = []
         for student_id, (total_score, count, name) in student_scores.items():
-            average_score = round(total_score / count, 2)
-            averages.append([0, student_id, name, average_score])  # 添加名次字段，初始为0
+            average_score = round(total_score / count, 2)  # 保留两位小数
+            averages.append([student_id, name, average_score])
 
         # 按照平均成绩从大到小排序，如果平均成绩相同，则按照 ID 从小到大排序
-        sorted_averages = sorted(averages, key=lambda x: (-x[3], x[1]))  # 按平均分降序，ID升序排序
-
-        # 为每个学生分配名次
-        rank = 1
-        prev_score = None
-        for i, student in enumerate(sorted_averages):
-            if student[3] != prev_score:
-                rank = i + 1
-                prev_score = student[3]
-            sorted_averages[i][0] = rank
+        sorted_averages = sorted(averages, key=lambda x: (-x[2], x[0]))
 
         return sorted_averages
+
 
 
     def main(self):
@@ -259,8 +251,7 @@ class AdminSystem:
                 average_score_list = self.average_score(self.students)
                 print(AdminSystem.SORTED_AVERAGE_SCORE_LIST)
                 for i, record in enumerate(average_score_list, start=1):
-                    # print(f"第{i}名: 学号: {record[0]}, 姓名: {record[1]}, 平均得分: {record[2]}")
-                    print(f"第{record[0]}名: 学号: {record[1]}, 姓名: {record[2]}, 平均得分: {record[3]}")
+                    print(f"第{i}名: 学号: {record[0]}, 姓名: {record[1]}, 平均得分: {record[2]}")
 
             elif choice == '4':
                 break
