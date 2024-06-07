@@ -19,3 +19,6 @@ print(binary_search(nums, target))  # 输出: 4
 
 target = 100
 print(binary_search(nums, target))  # 输出: -1
+
+# 13952062557
+# Hogwarts2024

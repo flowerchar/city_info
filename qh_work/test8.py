@@ -86,10 +86,10 @@ def print_full_year_calendar(year):
         print_quarter_calendar(year, start_month)
         print()  # 每个季度之间空行
 
-if __name__ == '__main__':
-    # 获取当前年份
-    current_year = datetime.now().year
 
-    # 打印当前年的日历
-    print_full_year_calendar(current_year)
+# 获取当前年份
+current_year = datetime.now().year
+
+# 打印当前年的日历
+print_full_year_calendar(current_year)
 
